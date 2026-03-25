@@ -1,0 +1,49 @@
+#include <winver.h>
+#include "version.h"
+
+#ifdef NOCRT
+#define VER_SPECIALBUILD    "noCRT"
+#define VER_FLAGS           VS_FF_SPECIALBUILD
+#else
+#define VER_SPECIALBUILD    ""
+#define VER_FLAGS           0
+#endif
+
+#ifdef _DEBUG
+#undef  VER_FLAGS
+#ifdef NOCRT
+#define VER_FLAGS           (VS_FF_DEBUG | VS_FF_SPECIALBUILD)
+#else
+#define VER_FLAGS           VS_FF_DEBUG
+#endif
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION     VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, 0
+    PRODUCTVERSION  VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, 0
+    FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+    FILEFLAGS       VER_FLAGS
+    FILEOS          VOS_NT_WINDOWS32
+    FILETYPE        VFT_APP
+    FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription",  "DiskSleep"
+            VALUE "FileVersion",      VERSION_STR
+            VALUE "InternalName",     "DiskSleep"
+            VALUE "OriginalFilename", "DiskSleep.exe"
+            VALUE "ProductName",      "DiskSleep"
+            VALUE "ProductVersion",   VERSION_STR
+#ifdef NOCRT
+            VALUE "SpecialBuild",     VER_SPECIALBUILD
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 0x04B0
+    END
+END
