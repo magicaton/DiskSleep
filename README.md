@@ -10,6 +10,10 @@ A Windows CLI utility that allows you to put a hard disk to sleep and lock it so
 
 > **Drives spin up automatically on boot and wake from sleep/hibernate.** Any HDD spins up as soon as it receives power — this is inherent hardware behavior, not something the OS initiates. There is no built-in way to prevent this.
 
+## Recommendations
+
+- **Disable Windows disk sleep:** It is highly recommended to set "Turn off hard disk after" to "0" (Never) in Windows Power Options for your current power plan. This prevents the OS from unexpectedly interfering with the manual sleep states.
+
 ## Requirements
 
 - Windows 10/11 (x64). May work on Windows 7, but untested.
@@ -148,7 +152,6 @@ The noCRT configurations produce a standalone binary with **no C Runtime depende
 A few ideas for the future, I can't guarantee that I'll get around to them.
 
 - **GUI / Windows Explorer integration** — some form of graphical interface or shell extension for sleep/wake without the command line.
-- **PUIS (Power-Up In Standby) support** — ATA feature that configures a drive to stay spun down on power-up, which would eliminate the need for Task Scheduler workarounds. Requires hardware support and may not work with all controllers.
 
 ## License
 

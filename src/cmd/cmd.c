@@ -157,15 +157,15 @@ static BOOL has_flag(int argc, wchar_t **argv, const wchar_t *flag) {
     return FALSE;
 }
 
-// Return TRUE (= abort) if disk is NOT a confirmed HDD; print error.
-// Returns FALSE only for confirmed HDD (allows operation).
-static BOOL require_hdd(DWORD diskNum) {
-    if (diskNum == (DWORD)-1) return FALSE;
+// Return TRUE if disk is a confirmed HDD (or unresolved).
+// Returns FALSE and prints an error if it is NOT a confirmed HDD.
+static BOOL is_hdd(DWORD diskNum) {
+    if (diskNum == (DWORD)-1) return TRUE;
     if (disk_type(diskNum) != 0) {
         PrintMsg(L"Error: PhysicalDrive%u is not detected as HDD. This command is only supported for HDD.\n", diskNum);
-        return TRUE;
+        return FALSE;
     }
-    return FALSE;
+    return TRUE;
 }
 
 // ---------------------------------------------------------------------------
@@ -210,7 +210,7 @@ int cmd_sleep(int argc, wchar_t **argv) {
         didRecovery = TRUE;
     }
 
-    if (require_hdd(a.target.diskNum)) return 1;
+    if (!is_hdd(a.target.diskNum)) return 1;
 
     // State pre-check (skip if --force).
     if (!a.force) {
@@ -372,7 +372,7 @@ int cmd_wake(int argc, wchar_t **argv) {
     }
 
     if (!resolve_disk_num(&a.target)) return 1;
-    if (require_hdd(a.target.diskNum)) return 1;
+    if (!is_hdd(a.target.diskNum)) return 1;
 
     BOOL skipOnline = FALSE;
     if (!a.force && !a.noOnline) {
@@ -737,7 +737,7 @@ int cmd_apm(int argc, wchar_t **argv) {
     Target t;
     if (!init_target(argv[1], &t)) return 1;
     if (!resolve_disk_num(&t)) return 1;
-    if (require_hdd(t.diskNum)) return 1;
+    if (!is_hdd(t.diskNum)) return 1;
 
     const wchar_t *sub = argv[2];
 
