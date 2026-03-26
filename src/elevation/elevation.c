@@ -224,6 +224,14 @@ int elevate_and_run(int argc, wchar_t **argv) {
 // worker_main — worker (elevated) side
 // ---------------------------------------------------------------------------
 
+static DWORD WINAPI monitor_parent_thread(LPVOID param) {
+    HANDLE hParent = (HANDLE)param;
+    WaitForSingleObject(hParent, INFINITE);
+    CloseHandle(hParent);
+    ExitProcess(1);
+    return 0;
+}
+
 int worker_main(int argc, wchar_t **argv) {
     if (argc < 4)
         return 1;
@@ -256,6 +264,16 @@ int worker_main(int argc, wchar_t **argv) {
     }
 
     output_set_handle(hPipe);
+
+    HANDLE hParentDup;
+    if (DuplicateHandle(GetCurrentProcess(), hParent, GetCurrentProcess(), &hParentDup, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
+        HANDLE hThread = CreateThread(NULL, 0, monitor_parent_thread, hParentDup, 0, NULL);
+        if (hThread) {
+            CloseHandle(hThread);
+        } else {
+            CloseHandle(hParentDup);
+        }
+    }
 
     int result = cmd_dispatch(argc - 3, argv + 3);
     if (result == -1) {
